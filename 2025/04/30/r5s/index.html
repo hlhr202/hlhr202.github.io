@@ -95,10 +95,8 @@
 <p>需要注意的是，R5S需要和主路由处于同一子网，对应的，主路由的子网掩码也应该为<code>255.255.0.0</code>。这里假设主路由开启的DHCP范围是<code>192.168.x.x</code>，即子网掩码为<code>255.255.0.0</code>。</p>
 <p>设置完毕之后，R5S的网络应该联通到主路由了。</p>
 <h3 id="OpenClash配置"><a href="#OpenClash配置" class="headerlink" title="OpenClash配置"></a>OpenClash配置</h3><p>这里不多描述，骷髅头系统自带了OpenClash，直接在WebUI的<code>服务 - OpenClash</code>中配置即可。把订阅地址加入到列表中，然后更新。</p>
-<h3 id="HTTPS问题"><a href="#HTTPS问题" class="headerlink" title="HTTPS问题"></a>HTTPS问题</h3><p>如果上一步中你还遇到了无法更新订阅的问题，那么大概率是你的R5S的ca-certificates没有更新。这里比较麻烦。<br>首先你需要在WebUI左侧的<code>系统 - 管理权</code>菜单中启用SSH，默认用户名是<code>root</code>，密码是<code>password</code>。你也可以使用RSA密钥登录。然后<code>ssh root@192.168.11.1</code>登录R5S。在SSH中执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">opkg update <span class="comment"># 更新软件包列表</span></span><br><span class="line">opkg install ca-certificates <span class="comment"># 安装ca-certificates</span></span><br></pre></td></tr></table></figure>
-
-<p>成功之后你可以<code>curl https://www.baidu.com</code>测试一下是否可以正常访问HTTPS网站了。然后你就可以在OpenClash中更新订阅了。</p>
+<h3 id="HTTPS问题"><a href="#HTTPS问题" class="headerlink" title="HTTPS问题"></a>HTTPS问题</h3><p>如果上一步中你还遇到了无法更新订阅的问题，那么有可能是因为SSL证书的问题。这里需要找出原因。<br>比较大概率是由于时间不正确导致的。你可以在WebUI中同步时间。一般情况下同步完时间后就可以解决了。</p>
+<p>或者你可以在SSH中使用curl来测试证书错误的原因。具体操作是<br>首先你需要在WebUI左侧的<code>系统 - 管理权</code>菜单中启用SSH，默认用户名是<code>root</code>，密码是<code>password</code>。你也可以使用RSA密钥登录。然后<code>ssh root@192.168.11.1</code>登录R5S。成功之后你可以<code>curl https://www.baidu.com</code>测试一下是否可以正常访问HTTPS网站。如果出现证书错误，你可以搜索错误信息，找到原因并解决。然后你就可以在OpenClash中更新订阅了。</p>
 <h3 id="防火墙问题"><a href="#防火墙问题" class="headerlink" title="防火墙问题"></a>防火墙问题</h3><p>经过上述操作，大概率你可以通过OpenClash正常科学上网了。不过也许你会发现关掉OpenClash之后，R5S的网络会直接崩掉。这个问题大概率是LAN口防火墙没正确配置。<br>如果你和我一样是使用单LAN口做旁路由，那么软路由的流量入站出站的方向是<code>LAN -&gt; LAN</code>。默认情况下，骷髅头系统不会启用这样的防火墙规则。具体操作是</p>
 <ul>
 <li>在WebUI中点击<code>网络 - 防火墙</code></li>
